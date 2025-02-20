@@ -1,7 +1,9 @@
 package com.qa.socialapi.application
 
-import com.qa.socialapi.dto.GoogleTokenResponse
-import com.qa.socialapi.dto.GoogleUserInfoResponse
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.qa.socialapi.dto.GoogleAuthDto.GoogleAuthResponse
+import com.qa.socialapi.util.JwtUtil
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
@@ -11,70 +13,78 @@ import org.springframework.util.MultiValueMap
 
 @Service
 class GoogleOAuthService(
-    private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate,
+    private val userService: UserService,
+    private val jwtUtil: JwtUtil,
+
+    @Value("\${google.oauth2.client-id}") private val clientId: String,
+    @Value("\${google.oauth2.client-secret}") private val clientSecret: String,
+    @Value("\${google.oauth2.redirect-uri}") private val redirectUri: String,
+    @Value("\${google.oauth2.token-uri}") private val tokenUrl: String,
+    @Value("\${google.oauth2.user-info-uri}") private val userInfoUrl: String
 ) {
+    private val logger = KotlinLogging.logger {}
 
-    @Value("\${google.oauth2.client-id}")
-    private lateinit var clientId: String
+    fun handleGoogleAuth(code: String): GoogleAuthResponse {
+        val googleAccessToken = getAccessToken(code)
+        val userInfo = getUserInfo(googleAccessToken)
 
-    @Value("\${google.oauth2.client-secret}")
-    private lateinit var clientSecret: String
+        val user = userService.findByProviderId(userInfo.sub)
+            ?: userService.saveUser(
+                provider = "google",
+                providerId = userInfo.sub,
+                name = userInfo.name,
+                email = userInfo.email
+            )
 
-    @Value("\${google.oauth2.redirect-uri}")
-    private lateinit var redirectUri: String
-
-    @Value("\${google.oauth2.token-uri}")
-    lateinit var tokenUrl: String
-
-    @Value("\${google.oauth2.user-info-uri}")
-    lateinit var userInfoUrl: String
-
-    /** 🔹 프론트에서 받은 code를 가지고 Google에 access_token 요청 */
-    fun getAccessToken(code: String): String {
-        try {
-            val requestBody: MultiValueMap<String, String> = LinkedMultiValueMap()
-            requestBody.add("code", code)
-            requestBody.add("client_id", clientId)
-            requestBody.add("client_secret", clientSecret)
-            requestBody.add("redirect_uri", redirectUri)
-            requestBody.add("grant_type", "authorization_code")
-
-            val headers = HttpHeaders()
-            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-
-            val requestEntity = HttpEntity(requestBody, headers)
-
-            println("🔹 Sending token request to: $tokenUrl")
-            println("🔹 Request Body: $requestBody")
-
-            val response = restTemplate.exchange(tokenUrl, HttpMethod.POST, requestEntity, GoogleTokenResponse::class.java)
-
-            val accessToken = response.body?.accessToken
-            println("✅ Received Access Token: $accessToken")
-
-            return accessToken ?: throw RuntimeException("❌ Failed to get access token")
-        } catch (e: Exception) {
-            println("❌ Error requesting access token: ${e.message}")
-            throw e
-        }
+        return GoogleAuthResponse(
+            provider = user.provider,
+            accessToken = jwtUtil.generateAccessToken(user.id.toString()),
+            refreshToken = jwtUtil.generateRefreshToken(user.id.toString()),
+        )
     }
 
-    /** 🔹 access_token을 이용하여 사용자 정보 요청 */
-    fun getUserInfo(accessToken: String): GoogleUserInfoResponse {
-        try {
-            val headers = HttpHeaders()
-            headers.setBearerAuth(accessToken)
-
-            val requestEntity = HttpEntity<Void>(headers)
-
-            println("🔹 Fetching user info from: $userInfoUrl")
-
-            val response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, requestEntity, GoogleUserInfoResponse::class.java)
-
-            return response.body ?: throw RuntimeException("❌ Failed to get user info")
-        } catch (e: Exception) {
-            println("❌ Error fetching user info: ${e.message}")
-            throw e
+    fun getAccessToken(code: String): String {
+        val headers = HttpHeaders().apply {
+            contentType = MediaType.APPLICATION_FORM_URLENCODED
         }
+
+        val body: MultiValueMap<String, String> = LinkedMultiValueMap()
+        body.add("grant_type", "authorization_code")
+        body.add("client_id", clientId)
+        body.add("client_secret", clientSecret)
+        body.add("redirect_uri", redirectUri)
+        body.add("code", code)
+
+        val request = HttpEntity(body, headers)
+        val response = restTemplate.postForEntity(tokenUrl, request, Map::class.java)
+        if (!response.statusCode.is2xxSuccessful) {
+            throw RuntimeException("Failed to get access token from google")
+        }
+
+        logger.info { "Received response: $response" }
+
+        val responseBody = response.body
+        return responseBody?.get("access_token") as String
+    }
+
+    fun getUserInfo(accessToken: String): GoogleUserInfo {
+        val headers = HttpHeaders().apply {
+            set("Authorization", "Bearer $accessToken")
+        }
+
+        val request = HttpEntity<String>(headers)
+        val response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, request, GoogleUserInfo::class.java)
+
+        return response.body ?: throw RuntimeException("Failed to get user info")
+    }
+
+    companion object {
+        data class GoogleUserInfo(
+            val sub: String,
+            val name: String,
+            val email: String,
+            @JsonProperty("picture") val profilePicture: String
+        )
     }
 }

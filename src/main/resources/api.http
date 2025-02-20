@@ -13,3 +13,15 @@ GET https://accounts.google.com/o/oauth2/auth?
     client_id=923892619075-ohdkn9r30q6hkrogp0c8uh7ujl2h9hpv.apps.googleusercontent.com&
     redirect_uri=https://6d29-175-124-145-87.ngrok-free.app/api/auth/google/callback&response_type=code&
     scope=openid%20profile%20email&access_type=offline
+
+###
+GET http://localhost:8080/api/auth/google/test
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjaGFueWVvbEBlZHUuaGFuYmF0LmFjLmtyIiwidXNlcklkIjoiQ2hhbnllb2wgUGFyayIsImlhdCI6MTczOTc4Nzk4NSwiZXhwIjoxNzM5NzkxNTg1fQ.RzcG_SLbWx3_3XY1qGRpsEYF_xCrPhKmK9NOaGrgFac
+
+###
+POST http://localhost:8080/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZmJmMjc1ZC0wZGMzLTRkYzgtODRlNS01M2NiYzg0YWM0OTMiLCJpYXQiOjE3Mzk3OTM3MDAsImV4cCI6MTc0MDM5ODUwMH0.uYC76Q01HIuytWcrt5Iue87ppD_YfrGHGKHVHj0N6Lc"
+}

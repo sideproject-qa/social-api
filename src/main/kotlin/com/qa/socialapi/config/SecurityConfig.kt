@@ -1,22 +1,37 @@
 package com.qa.socialapi.config
 
+import com.qa.socialapi.filter.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
-class SecurityConfig {
-    @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http
-            .authorizeHttpRequests { auth ->
-                auth.anyRequest().permitAll()
-            }
-            .csrf { it.disable() }  // CSRF 보호 비활성화
-            .formLogin { it.disable() }  // 로그인 폼 비활성화
-            .httpBasic { it.disable() }  // 기본 인증 비활성화
+@EnableWebSecurity
+class SecurityConfig(
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+) {
 
+    @Bean
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http
+            .csrf { it.disable() }
+            .authorizeHttpRequests {
+                it.requestMatchers(
+                    "/api/auth/kakao/callback",
+                    "/api/auth/google/callback",
+                    "/api/auth/refresh",
+                    "/swagger-ui*/**",
+                    "/v3/api-docs/**"
+                )
+                    .permitAll()
+                it.anyRequest().authenticated()
+            }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
 }
