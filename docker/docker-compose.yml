@@ -19,7 +19,7 @@ services:
       retries: 5
 
   app:
-    image: chanyeol429/side-qa:test-version6
+    image: chanyeol429/side-qa:test-version7
     container_name: app-container
     restart: unless-stopped
     ports:
