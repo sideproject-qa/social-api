@@ -13,3 +13,4 @@ COPY api-server.jar .
 
 # 5. 실행 명령어 개선 (ENTRYPOINT 사용)
 ENTRYPOINT ["java", "-XshowSettings:vm", "-XX:MinRAMPercentage=50", "-XX:MaxRAMPercentage=80", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000", "-jar", "api-server.jar"]
+

@@ -1,5 +1,6 @@
 package com.qa.socialapi.repository
 
+import com.qa.socialapi.dto.user.UpdateUserDto
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -15,12 +16,16 @@ import java.util.UUID
 data class UserEntity(
     @Id
     val id: UUID = UUID.randomUUID(),
+    val ticket: Int = 0,
+    val goalPoint: Int = 0,
+    val currentPoint: Int = 0,
+    val refreshToken: String? = null,
 
     @Column(nullable = false, unique = true)
-    val providerId: String,
+    val platformId: String,
 
     @Column(nullable = false)
-    val provider: String,
+    val platform: String,
 
     @Column(nullable = true)
     val name: String? = null,
@@ -32,8 +37,21 @@ data class UserEntity(
     val nickname: String? = null,
 
     @CreationTimestamp
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "created_at", nullable = false, updatable = false)
+    var createdAt: LocalDateTime? = null,
 
     @UpdateTimestamp
-    var updatedAt: LocalDateTime = LocalDateTime.now()
-)
+    @Column(name = "updated_at", nullable = false)
+    var updatedAt: LocalDateTime? = null
+) {
+    fun update(dto: UpdateUserDto.UpdateUserRequest): UserEntity {
+        return this.copy(
+            name = dto.name ?: this.name,
+            email = dto.email ?: this.email,
+            nickname = dto.nickname ?: this.nickname,
+            ticket = dto.ticket ?: this.ticket,
+            goalPoint = dto.goalPoint ?: this.goalPoint,
+            currentPoint = dto.currentPoint ?: this.currentPoint,
+        )
+    }
+}

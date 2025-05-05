@@ -5,7 +5,4 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface UserRepository: JpaRepository<UserEntity, UUID> {
-
-    fun findByPlatformId(providerId: String): UserEntity?
-}
+interface TestRepository: JpaRepository<TestEntity, UUID>

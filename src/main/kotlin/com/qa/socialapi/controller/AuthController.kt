@@ -1,62 +1,75 @@
 package com.qa.socialapi.controller
 
+import com.qa.socialapi.application.AppleOAuthService
+import com.qa.socialapi.application.AuthService
 import com.qa.socialapi.application.GoogleOAuthService
 import com.qa.socialapi.application.KakaoOAuthService
-import com.qa.socialapi.application.UserService
-import com.qa.socialapi.dto.GoogleAuthDto.GoogleAuthResponse
-import com.qa.socialapi.dto.KakaoAuthDto.KakaoAuthResponse
-import com.qa.socialapi.dto.RefreshTokenRequest
-import com.qa.socialapi.util.JwtUtil
+import com.qa.socialapi.dto.auth.AppleAuthDto.AppleAuthRequest
+import com.qa.socialapi.dto.auth.AppleAuthDto.AppleAuthResponse
+import com.qa.socialapi.dto.auth.GoogleAuthDto.GoogleAuthRequest
+import com.qa.socialapi.dto.auth.GoogleAuthDto.GoogleAuthResponse
+import com.qa.socialapi.dto.auth.KakaoAuthDto.KakaoAuthRequest
+import com.qa.socialapi.dto.auth.KakaoAuthDto.KakaoAuthResponse
+import com.qa.socialapi.dto.auth.RefreshTokenDto.RefreshTokenRequest
+import com.qa.socialapi.dto.auth.RefreshTokenDto.RefreshTokenResponse
+import com.qa.socialapi.dto.ResponseWrapper
+import com.qa.socialapi.enum.OSType
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(
     private val googleOAuthService: GoogleOAuthService,
     private val kakaoOAuthService: KakaoOAuthService,
-    private val jwtUtil: JwtUtil,
-    private val userService: UserService
+    private val appleOAuthService: AppleOAuthService,
+    private val authService: AuthService,
 ) {
+    val logger = KotlinLogging.logger {}
 
-    @GetMapping("/google/callback")
-    fun googleAuth(@RequestParam("code") code: String): ResponseEntity<GoogleAuthResponse> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(googleOAuthService.handleGoogleAuth(code))
+    @PostMapping("/google/android")
+    fun googleAuthByAndroid(@RequestBody request: GoogleAuthRequest): ResponseEntity<ResponseWrapper<GoogleAuthResponse>> {
+        val result = googleOAuthService.handleGoogle(request.idToken, OSType.ANDROID)
+        return wrap(isNew = result.first, authResult = result.second)
     }
 
-    @GetMapping("/kakao/callback")
-    fun kakaoAuth(@RequestParam("code") code: String): ResponseEntity<KakaoAuthResponse> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(kakaoOAuthService.handleKakaoAuth(code))
+    @PostMapping("/google/ios")
+    fun googleAuthByIos(@RequestBody request: GoogleAuthRequest): ResponseEntity<ResponseWrapper<GoogleAuthResponse>> {
+        val result = googleOAuthService.handleGoogle(request.idToken, OSType.IOS)
+        return wrap(isNew = result.first, authResult = result.second)
+    }
+
+    @PostMapping("/kakao")
+    fun kakaoAuth(@RequestBody request: KakaoAuthRequest): ResponseEntity<ResponseWrapper<KakaoAuthResponse>> {
+        val result = kakaoOAuthService.handleKakao(request.accessToken)
+        return wrap(isNew = result.first, authResult = result.second)
+    }
+
+    @PostMapping("/apple")
+    fun appleAuth(@RequestBody request: AppleAuthRequest): ResponseEntity<ResponseWrapper<AppleAuthResponse>> {
+        val result = appleOAuthService.handleApple(request.idToken)
+        return wrap(isNew = result.first, authResult = result.second)
+    }
+
+    @PostMapping("/logout")
+    fun logout(@RequestBody request: RefreshTokenRequest): ResponseEntity<ResponseWrapper<Unit>> {
+        authService.logout(request.refreshToken)
+        return wrap(authResult = Unit)
     }
 
 
-    // refresh token을 데이터베이스에 저장할지는 고민
     @PostMapping("/refresh")
-    fun refreshToken(@RequestBody request: RefreshTokenRequest): ResponseEntity<Map<String, String>> {
-        val refreshToken = request.refreshToken
-
-        if (!jwtUtil.validateRefreshToken(refreshToken)) {
-            return ResponseEntity.status(401).body(mapOf("error" to "Invalid refresh token"))
-        }
-
-        val userId = jwtUtil.getUserIdFromToken(refreshToken, isRefreshToken = true)
-        val user = userService.findById(UUID.fromString(userId))
-            ?: return ResponseEntity.status(401)
-                .body(mapOf("error" to "User not found"))
-
-        val newAccessToken = jwtUtil.generateAccessToken(user.id.toString())
-        return ResponseEntity.ok(mapOf("access_token" to newAccessToken))
-
+    fun refreshToken(@RequestBody request: RefreshTokenRequest): ResponseEntity<ResponseWrapper<RefreshTokenResponse>> {
+        val result = authService.refreshToken(request.refreshToken)
+        return wrap(authResult = RefreshTokenResponse(result))
     }
 
-    @GetMapping("/test")
-    fun test(): ResponseEntity<String> {
-        return ResponseEntity.ok("Test Success")
+    private fun <T> wrap(isNew: Boolean = false, authResult: T): ResponseEntity<ResponseWrapper<T>> {
+        val httpStatus = if (isNew) HttpStatus.CREATED else HttpStatus.OK
+        return ResponseEntity
+            .status(httpStatus)
+            .body(ResponseWrapper.from(httpStatus = httpStatus, data = authResult))
     }
 }

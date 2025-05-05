@@ -21,9 +21,10 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(
-                    "/api/auth/kakao/callback",
-                    "/api/auth/google/callback",
-                    "/api/auth/refresh",
+                    "/api/user*/**",
+                    "/api/auth*/**",
+                    "/api/test*/**",
+                    "/api/questions*/**",
                     "/swagger-ui*/**",
                     "/v3/api-docs/**"
                 )
