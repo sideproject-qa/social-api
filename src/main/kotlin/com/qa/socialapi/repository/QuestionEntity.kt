@@ -10,7 +10,7 @@ import java.util.*
 @Table(name = "question")
 data class QuestionEntity(
     @Id
-    val id: UUID,
+    val id: UUID = UUID.randomUUID(),
     val category: String,
     val content: String,
     val appId: UUID? = null,

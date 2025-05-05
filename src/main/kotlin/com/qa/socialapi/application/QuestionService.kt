@@ -9,7 +9,7 @@ import java.util.UUID
 class QuestionService(
     private val repository: QuestionRepository
 ) {
-    fun findAll(): List<QuestionEntity> {
+    fun findAllByAppIdIsNull(): List<QuestionEntity> {
         return repository.findAllByAppIdIsNull()
     }
 

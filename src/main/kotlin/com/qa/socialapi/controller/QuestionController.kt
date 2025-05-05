@@ -20,7 +20,7 @@ class QuestionController(private val service: QuestionService) {
     fun getQuestionList(
         @RequestParam(name = "appId", required = false) appId: UUID?,
     ): ResponseEntity<ResponseWrapper<GetQuestionListResponse>> {
-        val questionList = service.findAll() +
+        val questionList = service.findAllByAppIdIsNull() +
                 (appId?.let { service.findByAppId(it) } ?: emptyList())
 
         return wrap(httpStatus = HttpStatus.OK, data = GetQuestionListResponse(questionList.map { it.toQuestion() }))
