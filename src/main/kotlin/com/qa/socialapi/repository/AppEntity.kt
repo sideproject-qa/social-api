@@ -15,7 +15,7 @@ import java.util.UUID
 @Table(name = "app")
 data class AppEntity(
     @Id
-    val id: UUID,
+    val id: UUID = UUID.randomUUID(),
     val name: String,
     val description: String?,
     val icon: String?,

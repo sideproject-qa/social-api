@@ -52,6 +52,7 @@ object GetTestListDto {
                     iosMinSpec = iosMinSpec,
                     androidMinSpec = androidMinSpec,
                     createdAt = createdAt,
+                    updatedAt = updatedAt,
                 )
             }
         }

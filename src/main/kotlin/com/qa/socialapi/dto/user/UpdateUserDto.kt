@@ -7,12 +7,12 @@ import java.util.*
 object UpdateUserDto {
 
     data class UpdateUserRequest(
-        val name: String?,
-        val email: String?,
-        val nickname: String?,
-        val ticket: Int?,
-        val goalPoint: Int?,
-        val currentPoint: Int?,
+        val name: String? = null,
+        val email: String? = null,
+        val nickname: String? = null,
+        val ticket: Int? = null,
+        val goalPoint: Int? = null,
+        val currentPoint: Int? = null,
     )
 
     data class UpdateUserResponse(

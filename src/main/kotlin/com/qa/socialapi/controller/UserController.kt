@@ -30,7 +30,7 @@ class UserController(
         return wrap(HttpStatus.NO_CONTENT, data = Unit)
     }
 
-    @PutMapping("{accessToken}")
+    @PutMapping
     fun updateUser(
         @RequestHeader("Authorization") auth: String,
         @RequestBody dto: UpdateUserRequest

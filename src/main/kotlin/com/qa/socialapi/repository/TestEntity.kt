@@ -12,7 +12,7 @@ import java.util.UUID
 @Table(name = "app_test")
 data class TestEntity(
     @Id
-    val id: UUID,
+    val id: UUID = UUID.randomUUID(),
     val estimatedTime: Int?,
     val information: String?,
     val currentAttendees: Int = 0,
