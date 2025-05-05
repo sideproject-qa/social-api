@@ -1,7 +1,9 @@
 package com.qa.socialapi.util
 
+import com.qa.socialapi.exception.error.InvalidAccessTokenException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.*
@@ -16,6 +18,8 @@ class JwtUtil(
     private val refreshSecretKey: SecretKey = Keys.hmacShaKeyFor(refreshSecret.toByteArray())
     private val accessTokenExpiration: Long = 60 * 60 * 1000 // 1시간 (밀리초)
     private val refreshTokenExpiration: Long = 7 * 24 * 60 * 60 * 1000 // 7일
+
+    private val logger = KotlinLogging.logger {}
 
     fun generateAccessToken(userId: String): String {
         return Jwts.builder()
@@ -43,9 +47,11 @@ class JwtUtil(
                 .parseSignedClaims(token)
             true
         } catch (e: Exception) {
-            false
+            logger.error { "Invalid JWT token: $e" }
+            return false
         }
     }
+
 
     fun validateRefreshToken(token: String): Boolean {
         return try {
@@ -55,6 +61,7 @@ class JwtUtil(
                 .parseSignedClaims(token)
             true
         } catch (e: Exception) {
+            logger.error { "Invalid JWT token: $e" }
             false
         }
     }

@@ -21,7 +21,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(
-                    "/api/user*/**",
+                    "/api/users*/**",
                     "/api/auth*/**",
                     "/api/test*/**",
                     "/api/questions*/**",

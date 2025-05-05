@@ -1,6 +1,7 @@
 package com.qa.socialapi.application
 
 import com.qa.socialapi.dto.user.UpdateUserDto
+import com.qa.socialapi.exception.error.InvalidAccessTokenException
 import com.qa.socialapi.exception.error.UserNotFoundException
 import com.qa.socialapi.repository.UserEntity
 import com.qa.socialapi.repository.UserRepository
@@ -20,6 +21,7 @@ class UserService(
 
     fun findById(accessToken: String): UserEntity {
         val id = UUID.fromString(jwtUtil.getUserIdFromToken(accessToken))
+
         return userRepository.findByIdOrNull(id)
             ?: throw UserNotFoundException("$id user not found")
     }

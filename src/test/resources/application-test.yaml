@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop    # 필요에 따라 create, create-drop, validate, none 중 선택 가능
+    show-sql: true        # SQL 쿼리를 로그에 출력
+    properties:
+      hibernate:
+        format_sql: true  # 쿼리를 포맷해서 보기 좋게 출력
+        dialect: org.hibernate.dialect.H2Dialect
+
+google:
+  client-id-android: 912061916852-uim0fqtq0slcb18dq7h0n9ot0gve82gh.apps.googleusercontent.com
+  client-id-ios: 776929910960-lqiiole3lh5rv9nnbkp35oq44pc5o7h8.apps.googleusercontent.com
+  token-info-url: https://oauth2.googleapis.com/tokeninfo
+
+kakao:
+  user-info-uri: https://kapi.kakao.com/v2/user/me
+
+apple:
+  public-key-url: https://appleid.apple.com/auth/keys
+
+server:
+  port: 8080              # 애플리케이션 포트 설정 (기본값: 8080)
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+
+jwt:
+  secret: "your-super-secret-key-your-super-secret-key"
+  refresh-secret: "your-refresh-secret-key-your-refresh-secret-key"
