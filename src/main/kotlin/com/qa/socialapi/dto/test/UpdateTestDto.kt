@@ -3,21 +3,26 @@ package com.qa.socialapi.dto.test
 import com.qa.socialapi.enum.TestStatus
 import com.qa.socialapi.repository.AppEntity
 import com.qa.socialapi.repository.TestEntity
-import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 import java.util.*
 
-object GetTestListDto {
-
-    data class GetTestListRequest(
-        val status: TestStatus? = null,
+object UpdateTestDto {
+    data class UpdateTestRequest(
+        val estimatedTime: Int?,
+        val information: String?,
+        val currentAttendees: Int?,
+        val maxAttendees: Int?,
+        val appStart: LocalDateTime?,
+        val appEnd: LocalDateTime?,
+        val eventStart: LocalDateTime?,
+        val eventEnd: LocalDateTime?,
+        val rewardPoint: Int?,
+        val status: TestStatus?,
+        val iosMinSpec: Int?,
+        val androidMinSpec: Int?,
     )
 
-    data class GetTestListResponse(
-        val list: List<Test>
-    )
-
-    data class Test(
+    data class UpdateTestResponse(
         val id: UUID,
         val estimatedTime: Int?,
         val information: String?,
@@ -36,8 +41,8 @@ object GetTestListDto {
         val updatedAt: LocalDateTime? = null
     ) {
         companion object {
-            fun TestEntity.toTest(): Test {
-                return Test(
+            fun TestEntity.toUpdateTestResponse(): UpdateTestResponse {
+                return UpdateTestResponse(
                     id = id,
                     estimatedTime = estimatedTime,
                     information = information,

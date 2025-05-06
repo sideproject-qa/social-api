@@ -1,6 +1,8 @@
 package com.qa.socialapi.application
 
 import com.qa.socialapi.dto.test.CreateTestDto.CreateTestRequest
+import com.qa.socialapi.dto.test.UpdateTestDto
+import com.qa.socialapi.dto.test.UpdateTestDto.UpdateTestRequest
 import com.qa.socialapi.exception.error.PilotTestNotFoundException
 import com.qa.socialapi.repository.TestEntity
 import com.qa.socialapi.repository.TestRepository
@@ -22,6 +24,11 @@ class TestService(
 
     fun save(dto: CreateTestRequest): TestEntity {
         return repository.save(TestEntity.create(dto))
+    }
+
+    fun update(id: UUID, dto: UpdateTestRequest): TestEntity {
+        val test = repository.findByIdOrNull(id) ?: throw PilotTestNotFoundException("$id pilot test not found")
+        return repository.save(test.update(dto))
     }
 
     fun deleteById(id: UUID) {

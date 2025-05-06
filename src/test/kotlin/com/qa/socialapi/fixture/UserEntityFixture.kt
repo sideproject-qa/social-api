@@ -1,5 +1,6 @@
 package com.qa.socialapi.fixture
 
+import com.qa.socialapi.enum.Platform
 import com.qa.socialapi.repository.UserEntity
 
 fun getUserEntityFixture(): UserEntity {
@@ -9,7 +10,7 @@ fun getUserEntityFixture(): UserEntity {
         currentPoint = 5,
         refreshToken = null,
         platformId = "platformId",
-        platform = "platform",
+        platform = Platform.KAKAO,
         name = "name",
         email = "email",
         nickname = "nickname"

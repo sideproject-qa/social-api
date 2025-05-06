@@ -1,6 +1,8 @@
 package com.qa.socialapi.repository
 
 import com.qa.socialapi.dto.test.CreateTestDto.CreateTestRequest
+import com.qa.socialapi.dto.test.UpdateTestDto
+import com.qa.socialapi.dto.test.UpdateTestDto.UpdateTestRequest
 import com.qa.socialapi.enum.TestStatus
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -40,6 +42,22 @@ data class TestEntity(
     @Column(name = "updated_at", nullable = false, updatable = false)
     val updatedAt: LocalDateTime? = null
 ) {
+    fun update(dto: UpdateTestRequest): TestEntity {
+        return this.copy(
+            appStart = dto.appStart ?: this.appStart,
+            appEnd = dto.appEnd ?: this.appEnd,
+            eventStart = dto.eventStart ?: this.eventStart,
+            eventEnd = dto.eventEnd ?: this.eventEnd,
+            estimatedTime = dto.estimatedTime ?: this.estimatedTime,
+            information = dto.information ?: this.information,
+            currentAttendees = dto.currentAttendees ?: this.currentAttendees,
+            maxAttendees = dto.maxAttendees ?: this.maxAttendees,
+            rewardPoint = dto.rewardPoint ?: this.rewardPoint,
+            status = dto.status ?: this.status,
+            iosMinSpec = dto.iosMinSpec ?: this.iosMinSpec,
+            androidMinSpec = dto.androidMinSpec ?: this.androidMinSpec,
+        )
+    }
     companion object {
         fun create(dto: CreateTestRequest): TestEntity {
             return TestEntity(
