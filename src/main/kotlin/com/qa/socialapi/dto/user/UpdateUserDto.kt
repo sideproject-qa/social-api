@@ -1,5 +1,6 @@
 package com.qa.socialapi.dto.user
 
+import com.qa.socialapi.enum.Platform
 import com.qa.socialapi.repository.UserEntity
 import java.time.LocalDateTime
 import java.util.*
@@ -18,7 +19,7 @@ object UpdateUserDto {
     data class UpdateUserResponse(
         val id: UUID,
         val platformId: String,
-        val platform: String,
+        val platform: Platform,
         val name: String?,
         val email: String?,
         val nickname: String?,

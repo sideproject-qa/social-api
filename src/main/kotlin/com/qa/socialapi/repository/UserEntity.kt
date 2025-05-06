@@ -1,11 +1,8 @@
 package com.qa.socialapi.repository
 
 import com.qa.socialapi.dto.user.UpdateUserDto
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import jakarta.persistence.UniqueConstraint
+import com.qa.socialapi.enum.Platform
+import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
@@ -25,7 +22,8 @@ data class UserEntity(
     val platformId: String,
 
     @Column(nullable = false)
-    val platform: String,
+    @Enumerated(EnumType.STRING)
+    val platform: Platform,
 
     @Column(nullable = true)
     val name: String? = null,

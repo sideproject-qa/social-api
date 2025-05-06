@@ -1,17 +1,18 @@
 package com.qa.socialapi.dto.user
 
+import com.qa.socialapi.enum.Platform
 import com.qa.socialapi.repository.UserEntity
+import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 import java.util.UUID
 
-object GetUserDto {
 
-    data class GetUserRequest(val id: UUID)
+object GetUserDto {
 
     data class GetUserResponse(
         val id: UUID,
         val platformId: String,
-        val platform: String,
+        val platform: Platform,
         val name: String?,
         val email: String?,
         val nickname: String?,

@@ -29,7 +29,7 @@ class UserControllerTest
     private val repository: UserRepository,
     private val jwtUtil: JwtUtil,
     private val mockMvc: MockMvc,
-    val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
+    val objectMapper: ObjectMapper
 ) : FunSpec({
 
     afterEach {

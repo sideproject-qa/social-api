@@ -40,7 +40,7 @@ class AppleOAuthService(
         if (existingUser == null) {
             user = userService.save(
                 UserEntity(
-                    platform = Platform.APPLE.name,
+                    platform = Platform.APPLE,
                     platformId = userInfo.subId,
                     email = userInfo.email,
                 )

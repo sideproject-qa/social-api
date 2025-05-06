@@ -25,7 +25,7 @@ class TestControllerTest(
     val testRepository: TestRepository,
     val appRepository: AppRepository,
     val mockMvc: MockMvc,
-    val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
+    val objectMapper: ObjectMapper
 ) : FunSpec({
 
     afterEach {

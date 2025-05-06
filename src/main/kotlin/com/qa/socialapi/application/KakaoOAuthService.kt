@@ -30,7 +30,7 @@ class KakaoOAuthService(
         if (existingUser == null) {
             user = userService.save(
                 UserEntity(
-                    platform = Platform.KAKAO.name,
+                    platform = Platform.KAKAO,
                     platformId = userInfo.platformId,
                     email = userInfo.email,
                     nickname = userInfo.nickname,

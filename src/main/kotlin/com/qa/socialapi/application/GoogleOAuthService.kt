@@ -35,7 +35,7 @@ class GoogleOAuthService(
         if (existingUser == null) {
             user = userService.save(
                 UserEntity(
-                    platform = Platform.GOOGLE.name,
+                    platform = Platform.GOOGLE,
                     platformId = authInfo.platformId,
                     email = authInfo.email,
                     nickname = authInfo.name
