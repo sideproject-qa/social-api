@@ -18,7 +18,6 @@ import com.qa.socialapi.dto.ResponseWrapper
 import com.qa.socialapi.enum.OSType
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -31,7 +30,6 @@ class AuthController(
     private val appleOAuthService: AppleOAuthService,
     private val authService: AuthService,
 ) {
-    val logger = KotlinLogging.logger {}
 
     @Operation(summary = "구글 로그인 및 회원가입 - Android", description = "구글 OAuth - Android")
     @ApiResponse(responseCode = "200", description = AUTH_RESPONSE)

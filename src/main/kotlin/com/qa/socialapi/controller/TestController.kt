@@ -6,11 +6,8 @@ import com.qa.socialapi.dto.ResponseWrapper
 import com.qa.socialapi.dto.test.CreateTestDto.CreateTestRequest
 import com.qa.socialapi.dto.test.CreateTestDto.CreateTestResponse
 import com.qa.socialapi.dto.test.CreateTestDto.CreateTestResponse.Companion.toCreateTestResponse
-import com.qa.socialapi.dto.test.GetTestListDto
-import com.qa.socialapi.dto.test.GetTestListDto.GetTestListRequest
 import com.qa.socialapi.dto.test.GetTestListDto.GetTestListResponse
 import com.qa.socialapi.dto.test.GetTestListDto.Test.Companion.toTest
-import com.qa.socialapi.dto.test.UpdateTestDto
 import com.qa.socialapi.dto.test.UpdateTestDto.UpdateTestRequest
 import com.qa.socialapi.dto.test.UpdateTestDto.UpdateTestResponse
 import com.qa.socialapi.dto.test.UpdateTestDto.UpdateTestResponse.Companion.toUpdateTestResponse
