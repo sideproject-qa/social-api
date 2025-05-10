@@ -36,11 +36,11 @@ data class TestEntity(
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime? = null,
+    var createdAt: LocalDateTime? = null,
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, updatable = false)
-    val updatedAt: LocalDateTime? = null
+    @Column(name = "updated_at", nullable = false)
+    var updatedAt: LocalDateTime? = null
 ) {
     fun update(dto: UpdateTestRequest): TestEntity {
         return this.copy(

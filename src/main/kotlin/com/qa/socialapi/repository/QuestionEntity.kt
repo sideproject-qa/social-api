@@ -17,9 +17,9 @@ data class QuestionEntity(
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime? = null,
+    var createdAt: LocalDateTime? = null,
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    val updatedAt: LocalDateTime? = null
+    var updatedAt: LocalDateTime? = null
 )
